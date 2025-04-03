@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dqq551s0scnah"]
+
+[ext_resource type="Texture2D" uid="uid://bodnn0wovts7j" path="res://assets/planeta.png" id="1_wbk5r"]
+
+[node name="CelesBody" type="Node2D"]
+
+[node name="visual" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_wbk5r")

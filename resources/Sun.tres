@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="CelesBody" load_steps=3 format=3 uid="uid://db4vo33tjnq0t"]
+
+[ext_resource type="Script" path="res://scripts/celesbody.gd" id="1_o8w0u"]
+[ext_resource type="Texture2D" uid="uid://bodnn0wovts7j" path="res://assets/planeta.png" id="2_f0u8e"]
+
+[resource]
+script = ExtResource("1_o8w0u")
+name = "Sun"
+modulate = Color(1, 1, 0, 1)
+visual = ExtResource("2_f0u8e")
+radius = 100.0
+position = Vector2(0, 0)
+distance = 0.0
+velocity = Vector2(0, 0)
+acceleration = Vector2(0, 0)
+mass = 25.0
+force = Vector2(0, 0)
