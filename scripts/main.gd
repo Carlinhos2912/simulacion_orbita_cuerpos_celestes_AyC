@@ -29,15 +29,8 @@ func _ready():
 
 func _process(delta):	
 	earth.distance = Vector2(earth.position).distance_to(sun.position)
-	print("Distance ", earth.distance)
 	earth.acceleration = earth.calc_orbital_acceleration(sun.SUN_MASS, sun.position)
-	print("Aceleracion ", earth.acceleration)
-	earth.velocity.y += earth.acceleration.y * 0.001 * delta
-	earth.velocity.x += earth.acceleration.x * 0.001 * delta
-	print("velocidad ", earth.velocity)
-	print("sun posicion ", sun.position)
-	print("earth posicion ", earth.position)
-	earth.position.y += earth.velocity.y * 0.001 * delta
-	earth.position.x += earth.velocity.x * 0.001 * delta
-	print("posicion ", earth.position)
+	print("delta", delta)
+	earth.velocity += earth.acceleration * 0.065 * delta
+	earth.position += earth.velocity * 0.065 * delta
 	earth_selector.position = earth.position
