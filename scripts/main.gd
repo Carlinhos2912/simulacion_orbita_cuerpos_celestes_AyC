@@ -1,60 +1,113 @@
 extends Node2D
 
-#Instancia de sprites y CelesBody
-@onready var sun_selector = $sun_sprite
-@onready var earth_selector = $earth_sprite
-@onready var camera_selector = $sun_sprite/camara
+# ⬅️ Precargar selectores 
+@onready var sun_selector := $sun_sprite
+@onready var earth_selector := $earth_sprite
+@onready var camera_selector : Camera2D = $sun_sprite/CameraController.camera
+@onready var info_selector := $UI/info
 
+# ☀️ Instanciar objetos
 @export var sun = CelesBody.new()
 @export var earth = CelesBody.new()
 
+# 🌠 Render Trayectoria
+const MAX_STEPS = 255
 var positions_history : Array
 var sun_history : Array
+var actual_index = 0
 
+# 🆘 Auxiliares
+const SCALED_DELTA = 0.075
+var frame_counter = 0
 
 func _ready():
-	#Inicialización de sol (0,0)
-	sun.position = Vector2(get_viewport_rect().size / Vector2(2,2))
+	# ⚠️ Limitar los FPS
+	Engine.max_fps = 60
 	
-	sun_selector.texture = sun.visual
-	sun_selector.self_modulate = sun.modulate
-	sun_selector.scale = Vector2(sun.radius * 0.001, sun.radius * 0.001)
-	sun_selector.position = sun.position
+	# ☀️ Inicializar los sprites en base a la instancia
+	sun.upload(sun_selector)
+	earth.upload(earth_selector, sun_selector)
+	earth_selector.position = earth.position*Global.GAME_UNIT
 	
-	earth_selector.texture = earth.visual
-	earth_selector.self_modulate = earth.modulate
-	earth_selector.scale = Vector2(earth.radius * 0.001,  earth.radius * 0.001)
+	# 🌠 Inicializar los vectores de la trayectoria
+	positions_history.resize(MAX_STEPS)
+	sun_history.resize(MAX_STEPS)
 	
-	earth.position = sun.position +  earth.position
-	earth_selector.position = earth.position
-	
-#	print(earth.modulate)
-# 	print("Ola ya cargué")
+	for i in range(MAX_STEPS):
+		positions_history[i] = earth_selector.position
+		sun_history[i] = sun_selector.position
 
-func _process(delta):	
-	positions_history.append(earth.position)
-	sun_history.append(sun.position)
-	earth.distance = Vector2(earth.position).distance_to(sun.position)
-	earth.acceleration = earth.calc_orbital_acceleration(sun.SUN_MASS, sun.position)
+
+func _process(delta):
+	# 🔢 Contador de frames
+	frame_counter += 1
 	
-#	print("delta", delta)
-	earth.velocity += earth.acceleration * 0.01 * delta
-	earth.position += earth.velocity * 0.01 * delta
-	earth_selector.position = earth.position
-	earth_selector.rotation += 0.01
+	# ➡️ Mover los sprites tras calcular la dinamica de la instancia
+	sun.acceleration = Vector2(1e-5, 0) 
+	earth.dinamize(earth_selector, sun, SCALED_DELTA)
+	sun.dinamize(sun_selector)
 	
-	sun.velocity = Vector2(720000000000 * sun.SCALE_FACTOR, 0)
-	sun.position += sun.velocity * 0.01 * delta
-	sun_selector.position = sun.position
-	camera_selector.position = sun.position
-	print(camera_selector.position, sun.position)
+	# 📍 Renderizar la trayectoria
+	_update_path()
 	queue_redraw()
+	
+	# 📅 Actualizar la interfaz
+	if frame_counter % 15 == 0:
+		_update_gui()
+		frame_counter = 0
 
-func _draw():
-	if len(positions_history) > 500:
-		positions_history = positions_history.slice(-100, -1, 1)
 
-	for pos in range(1,len(positions_history)):
-		draw_line(positions_history[pos-1], positions_history[pos],  Color(175,175,175,pos/500), 1, true)
-		draw_line(sun_history[pos-1], sun_history[pos], Color(255,255,0,pos/500), 1, true)
-		
+func _update_path():
+	positions_history[actual_index] = earth_selector.position
+	sun_history[actual_index] = sun_selector.position
+	
+	actual_index = (actual_index + 1) % MAX_STEPS
+
+func _update_gui():
+	info_selector.text = """
+		FPS: %s
+		🌎 Radius: %s
+		🌎 Position: %s
+		🌎 Velocity: %s
+		🌎 Acceleration: %s
+		☀️ Radius: %s
+		☀️ Position: %s
+		☀️ Velocity: %s
+		☀️ Acceleration: %s
+		""" % [
+			Engine.get_frames_per_second(),
+			earth_selector.scale,
+			earth.position,
+			earth.velocity,
+			earth.acceleration,
+			
+			sun_selector.scale,
+			sun.position.round(),
+			sun.velocity,
+			sun.acceleration,
+			
+		]
+
+func _draw():	
+	var alpha : float
+	var indexFrom : int
+	var indexTo   : int
+	
+	for pos in range(MAX_STEPS-1):
+		indexFrom = (actual_index + pos) % MAX_STEPS
+		indexTo = (actual_index + 1 + pos) % MAX_STEPS
+
+		alpha = float(pos) / float(MAX_STEPS)
+		draw_line (
+			positions_history[indexFrom], 
+			positions_history[indexTo], 
+			Color(175,175,175,alpha)
+		)
+		draw_line(
+			sun_history[indexFrom], 
+			sun_history[indexTo], 
+			Color(255,255,0,alpha)
+		)
+
+func _on_camera_controller_attach_request() -> void:
+	camera_selector.global_position = sun_selector.position

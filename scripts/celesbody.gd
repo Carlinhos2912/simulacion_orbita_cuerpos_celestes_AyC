@@ -1,34 +1,60 @@
 extends Resource
 class_name CelesBody
 
-#Constantes importantes
-const UA = 149.6 * 10 ** 9
-const SCALE_FACTOR = 250 / UA
-const GRAVITATORY = 6.6743 * 10 ** -1.1
-const SUN_MASS = 1.9890 * 10 ** 3.0
-const EARTH_MASS = 5.9722 * 10 ** 2.4
-
 #Parámetros del cuerpo celeste (Discretos)
-@export var name : String
 @export var modulate : Color
 @export var visual : CompressedTexture2D
 
-#Parámetros del cuerpo celeste (Numéricos)
-@export var radius : float
-@export var position : Vector2 = Vector2(1 * UA * SCALE_FACTOR, 0)
-@export var distance : float
-@export var velocity : Vector2 = Vector2(0, 1.991 * 10 ** -4 * SCALE_FACTOR)
+#Parámetros del cuerpo celeste (Numéricas Intrínsecas)
+@export var raw_radius : String
+@export var raw_mass : String
+var radius : float
+var mass : float
+
+#Parámetros del cuerpo celeste (Numéricas Dinámicas)
+@export var position : Vector2
+@export var velocity : Vector2
 @export var acceleration : Vector2
-@export var mass : float
-@export var force : Vector2
+	
+
+# ============================ * ECUACIONES FUNDAMENTALES * ============================
+# ♻️ Metodo que actualiza un selector especificado en base a los parametros del CelesBody
+func upload( selector : Sprite2D, size_relative_to : Sprite2D = null ):
+	radius = float(self.raw_radius) if self.raw_radius.is_valid_float() else 0.0
+	mass = float(self.raw_mass) if self.raw_mass.is_valid_float() else 0.0
+	
+	selector.texture = self.visual
+	selector.self_modulate = self.modulate
+	selector.position = self.position * Global.GAME_UNIT
+	
+	if size_relative_to:
+		selector.scale = (Vector2(log(radius + 1), log(radius + 1)) * Global.GAME_UNIT)/size_relative_to.scale
+	else:
+		selector.scale = Vector2(log(radius + 1), log(radius + 1)) * Global.GAME_UNIT
 
 
-#=================== ECUACIONES FUNDAMENTALES ============================
+# 🐊 Metodo que moviliza un selector segun calculos matematicos
+func dinamize( selector : Sprite2D, respect : CelesBody = null, scale : float = 1.0, ):
+	if respect:
+		self.acceleration = self.calc_orbital_acceleration(respect.mass, respect.position)
+	
+	self.velocity += self.acceleration * scale
+	self.position += self.velocity * scale
+	
+	selector.position = self.position * Global.GAME_UNIT
 
-func calc_orbital_acceleration(mass, position: Vector2) -> Vector2:
-#	print("MMGV: ", Vector2(GRAVITATORY * mass / Vector2(self.position).distance_squared_to(position) / SCALE_FACTOR * Vector2(self.position).direction_to(position)))
-	return Vector2(GRAVITATORY * mass / Vector2(self.position).distance_squared_to(position) / SCALE_FACTOR * Vector2(self.position).direction_to(position))
 
-func calc_orbital_accelerations(array: Array):
-	for em in array:
-		em.acceleration = Vector2(GRAVITATORY * SUN_MASS / Vector2(self.position).distance_squared_to(position) / SCALE_FACTOR * Vector2(self.position).direction_to(position))
+# 💫 Metodo que calcula la aceleracion orbital en base un objetivo
+func calc_orbital_acceleration(objective_mass, objective_position: Vector2) -> Vector2:
+	var r_vec = objective_position - self.position
+	var acceleration_magnitude = Global.GRAVITATORY * objective_mass / r_vec.length_squared()
+			
+	# print("r_vec:", r_vec)
+	# print("direction:", direction)
+	# print("GRAVITATORY:", Global.GRAVITATORY)
+	# print("objective_mass:", objective_mass)
+	# print("length_squared:", r_vec.length_squared())
+	# print("acceleration_magnitude:", acceleration_magnitude)
+	# print("return:", direction * acceleration_magnitude)
+	
+	return r_vec.normalized() * acceleration_magnitude * Global.VELOCITY_UNIT

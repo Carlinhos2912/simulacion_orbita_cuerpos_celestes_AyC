@@ -5,13 +5,10 @@
 
 [resource]
 script = ExtResource("1_o8w0u")
-name = "Sun"
-modulate = Color(1, 1, 0, 1)
+modulate = Color(1, 0.807843, 0, 1)
 visual = ExtResource("2_snn4y")
-radius = 109.0
+raw_radius = "0.00465047"
+raw_mass = "1.0"
 position = Vector2(0, 0)
-distance = 0.0
 velocity = Vector2(0, 0)
 acceleration = Vector2(0, 0)
-mass = 25.0
-force = Vector2(0, 0)

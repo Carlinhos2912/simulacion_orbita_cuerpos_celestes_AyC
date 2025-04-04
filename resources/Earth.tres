@@ -5,13 +5,10 @@
 
 [resource]
 script = ExtResource("1_833eo")
-name = "Earth"
 modulate = Color(1, 1, 1, 1)
 visual = ExtResource("2_qrex4")
-radius = 1.0
-position = Vector2(250, 0)
-distance = 1.0
-velocity = Vector2(0, 29783)
+raw_radius = "4.2635e-5"
+raw_mass = "3.00349e-06"
+position = Vector2(10, 0)
+velocity = Vector2(0, 1.72)
 acceleration = Vector2(0, 0)
-mass = 25.0
-force = Vector2(0, 0)

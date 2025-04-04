@@ -1,16 +1,40 @@
-[gd_scene load_steps=4 format=3 uid="uid://bo0i8bflymlh0"]
+[gd_scene load_steps=6 format=3 uid="uid://bo0i8bflymlh0"]
 
 [ext_resource type="Script" uid="uid://j5tlgiqhw1xr" path="res://scripts/main.gd" id="1_f70lt"]
 [ext_resource type="Resource" uid="uid://db4vo33tjnq0t" path="res://resources/Sun.tres" id="2_2jt2u"]
 [ext_resource type="Resource" uid="uid://ci3jbnygxq8i1" path="res://resources/Earth.tres" id="3_rno8y"]
+[ext_resource type="PackedScene" uid="uid://c8df3ij62bcyi" path="res://scenes/camera_controller.tscn" id="4_jyhfs"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_jyhfs"]
+blend_mode = 1
 
 [node name="canvas" type="Node2D"]
 script = ExtResource("1_f70lt")
 sun = ExtResource("2_2jt2u")
 earth = ExtResource("3_rno8y")
 
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="info" type="Label" parent="UI"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -138.0
+offset_right = 172.0
+grow_vertical = 0
+size_flags_horizontal = 0
+size_flags_vertical = 8
+text = "FPS: 60
+🌎 Position: 0.000
+🌎 Velocity:  0.000
+🌎 Acceleration: 0.000
+☀️ Position: 0.0000"
+
 [node name="earth_sprite" type="Sprite2D" parent="."]
 
 [node name="sun_sprite" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_jyhfs")
 
-[node name="camara" type="Camera2D" parent="sun_sprite"]
+[node name="CameraController" parent="sun_sprite" instance=ExtResource("4_jyhfs")]
+
+[connection signal="attach_request" from="sun_sprite/CameraController" to="." method="_on_camera_controller_attach_request"]
