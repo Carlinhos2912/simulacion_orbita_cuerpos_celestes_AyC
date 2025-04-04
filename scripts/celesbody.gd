@@ -1,6 +1,13 @@
 extends Resource
 class_name CelesBody
 
+#Constantes importantes
+const UA = 149.6 * 10 ** 9
+const SCALE_FACTOR = 250 / UA
+const GRAVITATORY = 6.6743 * 10 ** -1.1
+const SUN_MASS = 1.9890 * 10 ** 3.0
+const EARTH_MASS = 5.9722 * 10 ** 2.4
+
 #Parámetros del cuerpo celeste (Discretos)
 @export var name : String
 @export var modulate : Color
@@ -15,17 +22,11 @@ class_name CelesBody
 @export var mass : float
 @export var force : Vector2
 
-#Constantes importantes
-const UA = 149.6 * 10 ** 9
-const SCALE_FACTOR = 250 / UA
-const GRAVITATORY = 6.6743 * 10 ** -1.1
-const SUN_MASS = 1.9890 * 10 ** 3.0
-const EARTH_MASS = 5.9722 * 10 ** 2.4
 
 #=================== ECUACIONES FUNDAMENTALES ============================
 
 func calc_orbital_acceleration(mass, position: Vector2) -> Vector2:
-	print("MMGV: ", Vector2(GRAVITATORY * mass / Vector2(self.position).distance_squared_to(position) / SCALE_FACTOR * Vector2(self.position).direction_to(position)))
+#	print("MMGV: ", Vector2(GRAVITATORY * mass / Vector2(self.position).distance_squared_to(position) / SCALE_FACTOR * Vector2(self.position).direction_to(position)))
 	return Vector2(GRAVITATORY * mass / Vector2(self.position).distance_squared_to(position) / SCALE_FACTOR * Vector2(self.position).direction_to(position))
 
 func calc_orbital_accelerations(array: Array):

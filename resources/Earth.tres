@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="CelesBody" load_steps=3 format=3 uid="uid://ci3jbnygxq8i1"]
 
-[ext_resource type="Script" path="res://scripts/celesbody.gd" id="1_833eo"]
+[ext_resource type="Script" uid="uid://crmq8g7g76f62" path="res://scripts/celesbody.gd" id="1_833eo"]
 [ext_resource type="Texture2D" uid="uid://bodnn0wovts7j" path="res://assets/planeta.png" id="2_qrex4"]
 
 [resource]
@@ -8,7 +8,7 @@ script = ExtResource("1_833eo")
 name = "Earth"
 modulate = Color(1, 1, 1, 1)
 visual = ExtResource("2_qrex4")
-radius = 50.0
+radius = 1.0
 position = Vector2(250, 0)
 distance = 1.0
 velocity = Vector2(0, 29783)
