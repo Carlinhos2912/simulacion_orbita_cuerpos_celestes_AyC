@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CelesBody" load_steps=3 format=3 uid="uid://derjmq03j7m2u"]
+
+[ext_resource type="Script" uid="uid://crmq8g7g76f62" path="res://scripts/celesbody.gd" id="1_7a4gd"]
+[ext_resource type="Texture2D" uid="uid://bcnhrc8netkv2" path="res://assets/sun.png" id="2_hlple"]
+
+[resource]
+script = ExtResource("1_7a4gd")
+modulate = Color(0.45, 0.2433, 0.2115, 1)
+visual = ExtResource("2_hlple")
+raw_radius = "2.27e-05"
+raw_mass = "3.21e-07"
+position = Vector2(-15.24, 0)
+velocity = Vector2(0, 1.39)
+acceleration = Vector2(0, 0)
+metadata/_custom_type_script = "uid://crmq8g7g76f62"

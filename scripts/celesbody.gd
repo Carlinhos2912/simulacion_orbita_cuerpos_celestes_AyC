@@ -34,27 +34,37 @@ func upload( selector : Sprite2D, size_relative_to : Sprite2D = null ):
 
 
 # 🐊 Metodo que moviliza un selector segun calculos matematicos
-func dinamize( selector : Sprite2D, respect : CelesBody = null, scale : float = 1.0, ):
+func dinamize( selector : Sprite2D, respect = null, scale : float = 1.0, ):
 	if respect:
-		self.acceleration = self.calc_orbital_acceleration(respect.mass, respect.position)
+		self.acceleration = self.calc_orbital_acceleration(respect)
 	
 	self.velocity += self.acceleration * scale
 	self.position += self.velocity * scale
 	
 	selector.position = self.position * Global.GAME_UNIT
+	
+
+# 💫 Método recursivo para calcular la aceleración orbital en base a uno o varios objetivos
+func calc_orbital_acceleration(objective = null) -> Vector2:
+	if objective == null:
+		return Vector2(0,0)
+
+	if objective is CelesBody:
+		var r_vec = objective.position - self.position
+		var acc_magnitude = Global.GRAVITATORY * objective.mass / r_vec.length_squared()
+		return r_vec.normalized() * acc_magnitude * Global.VELOCITY_UNIT
+
+	elif objective is Array:
+		if objective.is_empty():
+			return Vector2(0,0)
+		
+		return calc_orbital_acceleration(objective[0]) + calc_orbital_acceleration(objective.slice(1, objective.size() - 1))
+
+	return Vector2(0,0)
 
 
 # 💫 Metodo que calcula la aceleracion orbital en base un objetivo
-func calc_orbital_acceleration(objective_mass, objective_position: Vector2) -> Vector2:
-	var r_vec = objective_position - self.position
-	var acceleration_magnitude = Global.GRAVITATORY * objective_mass / r_vec.length_squared()
-			
-	# print("r_vec:", r_vec)
-	# print("direction:", direction)
-	# print("GRAVITATORY:", Global.GRAVITATORY)
-	# print("objective_mass:", objective_mass)
-	# print("length_squared:", r_vec.length_squared())
-	# print("acceleration_magnitude:", acceleration_magnitude)
-	# print("return:", direction * acceleration_magnitude)
-	
+func _DEPRECATED_calc_orbital_acceleration( objective:CelesBody=null, objectives:Array[CelesBody] = []) -> Vector2:
+	var r_vec = objective.position - self.position
+	var acceleration_magnitude = Global.GRAVITATORY * objective.mass / r_vec.length_squared()
 	return r_vec.normalized() * acceleration_magnitude * Global.VELOCITY_UNIT
