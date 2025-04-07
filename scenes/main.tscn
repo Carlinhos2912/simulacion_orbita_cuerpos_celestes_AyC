@@ -54,11 +54,44 @@ offset_right = 172.0
 grow_vertical = 0
 size_flags_horizontal = 0
 size_flags_vertical = 8
-text = "FPS: 60
-🌎 Position: 0.000
-🌎 Velocity:  0.000
-🌎 Acceleration: 0.000
-☀️ Position: 0.0000"
+text = "Earth Position: 0.000
+Earth Velocity:  0.000
+Earth Acceleration: 0.000
+Sun Position: 0.0000"
+
+[node name="verlet_checkbtn" type="CheckButton" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -44.0
+offset_bottom = 24.0
+grow_horizontal = 0
+text = "Verlet (ON / OFF)"
+
+[node name="HSlider" type="HSlider" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -168.0
+offset_top = 72.0
+offset_right = -8.0
+offset_bottom = 88.0
+grow_horizontal = 0
+min_value = 0.001
+max_value = 0.5
+step = 0.01
+value = 0.101
+tick_count = 5
+
+[node name="Label" type="Label" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -168.0
+offset_top = 44.0
+offset_bottom = 67.0
+grow_horizontal = 0
+text = "Delta Scale: 0.1"
 
 [node name="sun_sprite" type="Sprite2D" parent="."]
 material = SubResource("CanvasItemMaterial_jyhfs")
@@ -73,4 +106,6 @@ material = SubResource("CanvasItemMaterial_jyhfs")
 
 [node name="mars_sprite" type="Sprite2D" parent="."]
 
+[connection signal="toggled" from="UI/verlet_checkbtn" to="." method="_on_verlet_checkbtn_toggled"]
+[connection signal="drag_ended" from="UI/HSlider" to="." method="_on_h_slider_drag_ended"]
 [connection signal="attach_request" from="sun_sprite/CameraController" to="." method="_on_camera_controller_attach_request"]

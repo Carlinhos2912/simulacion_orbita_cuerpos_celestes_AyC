@@ -24,9 +24,10 @@ var sun_history : Array
 var actual_index = 0
 
 # 🆘 Auxiliares
-const SCALED_DELTA = 0.1
+var SCALED_DELTA = 0.1
 var frame_counter = 0
 var colors : Array[Color]
+var verlet: bool = false
 
 func _ready():
 	# ⚠️ Limitar los FPS
@@ -57,8 +58,6 @@ func _ready():
 		])
 		sun_history.append(sun_selector.position)
 
-
-
 func _process(delta):
 	# 🔢 Contador de frames
 	frame_counter += 1
@@ -66,10 +65,10 @@ func _process(delta):
 	# ➡️ Mover los sprites tras calcular la dinamica de la instancia
 	sun.velocity = Vector2(1.32/7.39, 0)
 	
-	mercury.dinamize(mercury_selector, [sun, venus, earth, mars], SCALED_DELTA)
-	venus.dinamize(venus_selector, [sun, mercury, earth, mars], SCALED_DELTA)
-	earth.dinamize(earth_selector, [sun, mercury, venus, mars], SCALED_DELTA)
-	mars.dinamize(mars_selector, [sun, mercury, venus, earth], SCALED_DELTA)
+	mercury.dinamize(mercury_selector, [sun, venus, earth, mars], SCALED_DELTA, verlet)
+	venus.dinamize(venus_selector, [sun, mercury, earth, mars], SCALED_DELTA, verlet)
+	earth.dinamize(earth_selector, [sun, mercury, venus, mars], SCALED_DELTA, verlet)
+	mars.dinamize(mars_selector, [sun, mercury, venus, earth], SCALED_DELTA, verlet)
 	sun.dinamize(sun_selector, null, SCALED_DELTA)
 	
 	$mName.global_position = mercury_selector.global_position
@@ -83,7 +82,7 @@ func _process(delta):
 	queue_redraw()
 	
 	# 📅 Actualizar la interfaz
-	if frame_counter % 15 == 0:
+	if frame_counter % 5 == 0:
 		_update_gui()
 		frame_counter = 0
 
@@ -100,21 +99,19 @@ func _update_path():
 
 func _update_gui():
 	info_selector.text = """
-		📅 Tiempo: %d
-		🌎 Position: %s
-		🌎 Velocity: %s
-		🌎 Acceleration: %s
-		☀️ Position: %s
-		☀️ Velocity: %s
-		☀️ Acceleration: %s
+		FPS: %d
+		Mercury Acceleration: %s
+		Venus Acceleration: %s
+		Earth Acceleration: %s
+		Mars Acceleration: %s
+		Sun Position: %s
 		""" % [
 			Engine.get_frames_per_second(),
-			earth.position,
-			earth.velocity,
+			mercury.acceleration,
+			venus.acceleration,
 			earth.acceleration,
-			sun.position.round(),
-			sun.velocity,
-			sun.acceleration,
+			mars.acceleration,
+			sun.position
 		]
 
 func _draw():	
@@ -149,3 +146,11 @@ func _draw():
 
 func _on_camera_controller_attach_request() -> void:
 	camera_selector.global_position = sun_selector.position
+
+func _on_verlet_checkbtn_toggled(toggled_on):
+	verlet = toggled_on
+
+func _on_h_slider_drag_ended(value_changed):
+	if value_changed:
+		SCALED_DELTA = $UI/HSlider.value
+		$UI/Label.text = "Delta Scale: %s" % SCALED_DELTA 

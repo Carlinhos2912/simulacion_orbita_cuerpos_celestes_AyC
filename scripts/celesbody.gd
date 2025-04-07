@@ -34,15 +34,23 @@ func upload( selector : Sprite2D, size_relative_to : Sprite2D = null ):
 
 
 # 🐊 Metodo que moviliza un selector segun calculos matematicos
-func dinamize( selector : Sprite2D, respect = null, scale : float = 1.0, ):
+func dinamize( selector : Sprite2D, respect = null, scale : float = 1.0, verlet = false):
 	if respect:
 		self.acceleration = self.calc_orbital_acceleration(respect)
-	
-	self.velocity += self.acceleration * scale
-	self.position += self.velocity * scale
-	
+		
+	if verlet:
+		var new_pos = Vector2(self.position + self.velocity * scale + 0.5 * self.acceleration * scale ** 2)
+		var new_acceleration = Vector2(0,0)
+		if respect:
+			self.position = new_pos
+			new_acceleration = self.calc_orbital_acceleration(respect)
+		self.velocity = Vector2(self.velocity + 0.5 * (self.acceleration + new_acceleration) * scale)
+		self.position = new_pos
+	else:
+		self.velocity += self.acceleration * scale
+		self.position += self.velocity * scale
+		
 	selector.position = self.position * Global.GAME_UNIT
-	
 
 # 💫 Método recursivo para calcular la aceleración orbital en base a uno o varios objetivos
 func calc_orbital_acceleration(objective = null) -> Vector2:
