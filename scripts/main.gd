@@ -100,26 +100,21 @@ func _update_path():
 
 func _update_gui():
 	info_selector.text = """
-		📅 Tiempo:  
+		📅 Tiempo: %d
 		🌎 Position: %s
 		🌎 Velocity: %s
 		🌎 Acceleration: %s
-		☀️ Radius: %s
 		☀️ Position: %s
 		☀️ Velocity: %s
 		☀️ Acceleration: %s
 		""" % [
 			Engine.get_frames_per_second(),
-			earth_selector.scale,
 			earth.position,
 			earth.velocity,
 			earth.acceleration,
-			
-			sun_selector.scale,
 			sun.position.round(),
 			sun.velocity,
 			sun.acceleration,
-			
 		]
 
 func _draw():	
